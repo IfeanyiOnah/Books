@@ -19,11 +19,6 @@ public:
 	
 
 	//non-modifiable member function
-	std::string get_name() { return name; }
-	std::string get_card_No() { return card_no; }
-	double get_fee() { return fee; }
-	bool own_fee() { return (fee ? true : false); }
-
 	 std::string get_name() const { return name; }
 	 std::string get_card_No() const { return card_no; }
 	double get_fee() const { return fee; }

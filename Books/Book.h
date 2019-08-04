@@ -29,13 +29,6 @@ public:
 
 
 	//non-modifiable function
-	std::string get_title() { return title; }
-	std::string get_author() { return author; }
-	std::string get_isbn() { return isbn; }
-
-	//return true is book is available
-	bool is_check_out() { return chk_t; }
-
 	//function to check out the book
 	 std::string get_title() const { return title; }
 	 std::string get_author() const { return author; }
