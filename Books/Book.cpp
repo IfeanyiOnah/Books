@@ -52,7 +52,7 @@ Book::Genre to_genre(const string& s) {
 	if (s == "biography")return Book::BIOGRAPHY;
 
 	string ss = "Invalid genre detected: " + s;
-	error_msg(ss);
+	throw Book::BadBook(ss, Book::INVALID_GEN);
 	return Book::SCIENCE;
 }
 
@@ -63,6 +63,7 @@ std::string read_expression(istream& is, const string& s)
 {
 	string tmp;
 	char ch1, ch2;
+	is.exceptions(is.exceptions() | ios_base::badbit);
 	while (is >> ch1 && ch1 != '=')tmp += tolower(ch1);
 
 	if (is.eof()) {
@@ -105,9 +106,11 @@ std::istream& operator>>(std::istream& is, Book& b)
 //ISBN = { 0 - 0 - 1 - s }
 //Genre = { science }
 {
-	string tit, aut, isb,tmp;
+	string tit, aut, isb;
 	string gen;
 	try {
+
+		is.exceptions(is.exceptions() | ios_base::badbit);
 		//get auhot
 		tit = read_expression(is, "author");
 
@@ -120,12 +123,12 @@ std::istream& operator>>(std::istream& is, Book& b)
 		//get genre
 		gen = read_expression(is, "genre");
 
-		if (is.fail() || is.bad())return is;
+		if (is.fail())return is;
 
 
 		if (b.isbn_valid(isb)) {
 			string s = "invalid ISBN number: " + isb + " Title: " + tit;
-			error_msg(s);
+			throw Book::BadBook(s, Book::INVALID_ISBN);
 		}
 		Book tmp(tit, aut, isb, to_genre(gen));
 		b = tmp;

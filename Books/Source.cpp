@@ -14,40 +14,37 @@
 
 using namespace std;
 
+extern int kk;
+
+
 
 int main(int argc, char* argv[]) {
 
 	try {
-		Library lib;
+	/*	int su=0, ch = 0;
 
+		for (int i = 0; i < 3; ++i) {
+
+			cout << "i: " << i << endl;
+			cin >> ch;
+			su += ch;*/
+
+//}
+		//cout << su << endl;
+		Library lib;
 		lib.execute(argc, argv);
 
-		////get the current time
-		//auto now = chrono::system_clock::now();
-		//time_t ttm = chrono::system_clock::to_time_t(now);
-		//char ch[26];
-		//ctime_s(ch, sizeof(ch), &ttm);
-		//string s(ch, ch + sizeof(ch));
-		//cout << s << endl;
-
-		//istream& d = cin;
-		//d.exceptions(d.exceptions() | ios_base::badbit);
-
-		//int ch1;
-		//d >> ch1;
+	//cout << kk << endl;
 
 	}
-	catch (exception&e) {
-		cerr << e.what() << endl;
-	}
-
-	catch (execution_error& e) {
+	catch (exception& e) {
 		cerr << e.what() << endl;
 	}
 
 	catch (...) {
 		cerr << "Some exception occur " << endl;
 	}
+
 	keep_window_open();
 	return 0;
 }

@@ -5,7 +5,7 @@
 using namespace std;
 
 
-
+int kk = 2;
 void Library::all_patron_owing() {
 	cout << "The name(s) of people owing.." << endl;
 
@@ -25,12 +25,12 @@ void Library::check_out() {
 	string card_no;
 	cout << "Please enter your card no: " << endl;
 	cin >> card_no;
-	if (!cin)error_msg("error reading card no");
+	if (!cin)error_msg("invalid input");
 
 
 	//make sure that both the user and the book are in the library
 	if (!patron_available(card_no))
-		error_msg("Can't find the name in the data base: Please register or enter correct card no");
+		throw Patron::BadPatron("Invalid card no: " + card_no, Patron::INVALID_CARD);
 
 
 	//Prompt the user to enter the isbn of the book
@@ -39,7 +39,7 @@ void Library::check_out() {
 	cin >> isbn;
 
 	if (!book_available(isbn))
-		error_msg("Can't find the book in the data base: Please ensure that you typed the correct isbn no");
+		throw Book::BadBook("invalid ISBN number: "+isbn, Book::INVALID_ISBN);
 
 	//make sure that the user is not owing a fee
 	if (patron.at(pt_no).get_fee() < 0) {
@@ -107,11 +107,11 @@ void Library::check_in() {
 	string card_no;
 	cout << "Please enter your card no: " << endl;
 	cin >> card_no;
-	if (!cin)error_msg("error reading card no");
+	if (!cin)error_msg("invalid input");
 
 	//make sure that both the user and the book are in the library
 	if (!patron_available(card_no))
-		error_msg("Can't find the name in the data base: Please register or enter correct card no");
+		throw Patron::BadPatron("Invalid card no: " + card_no, Patron::INVALID_CARD);
 
 	//Prompt the user to enter the isbn of the book
 	string isb;
@@ -121,7 +121,7 @@ void Library::check_in() {
 
 
 	if (!book_available(isb))
-		error_msg("Can't find the book in the data base: Please ensure that you typed the correct isbn no");
+		throw Book::BadBook("invalid ISBN number: " + isb, Book::INVALID_ISBN);
 
 	//update the transaction
 	if (!book.at(bk_no).is_check_out())error_msg("Error: book aready checked in");
@@ -137,13 +137,16 @@ void Library::patron_bal() {
 	//Prompt the user to enter card number
 	string card_no;
 	cout << "Please enter your card no: " << endl;
-	cin >> card_no;
-	if (!cin)error_msg("error reading card no");
+
+	getline(cin, card_no);
+	
+	//cin >> card_no;
+	if (!cin)error_msg("invalid input");
 
 	//make sure that both the user and the book are in the library
 	if (!patron_available(card_no))
-		error_msg("Can't find the name in the data base: Please register or enter correct card no");
-	cout << "Your balance is: " << patron.at(pt_no).get_fee() << " Euro(s)\n";
+		throw Patron::BadPatron("Invalid card no: " + card_no, Patron::INVALID_CARD);
+	cout << patron.at(pt_no);
 
 }
 void Library::initialize(int argc, char* argv[]) {
@@ -184,33 +187,55 @@ void Library::execute(int argc, char* argv[]) {
 	cout << "4. For further instruction: please type 'h' followed by enter button\n";
 
 	while (1) {
-		char flag;
-		cin >> flag;
-		switch (flag) {
-		case 'C': case 'c':
-			check_in();
-			break;
-		case 'O': case 'o':
-			check_out();
-			break;
-		case 'A': case 'a':
-			patron_bal();
-			break;
-		case 'p': case 'P':
-			break;
-		case 'b': case 'B':
-			
-			break;
-		case 'H': case 'h':
-			instruct();
-			break;
-		case 'q':case 'Q':
-			return;
+		char flag = 0;
+		try {
+			(cin >> flag).get();
 
-		default:
-			break;
+
+			switch (flag) {
+			case 'C': case 'c':
+				check_in();
+				break;
+			case 'O': case 'o':
+				check_out();
+				break;
+			case 'A': case 'a':
+				patron_bal();
+				break;
+			case 'p': case 'P':
+				break;
+			case 'b': case 'B':
+
+				break;
+			case 'H': case 'h':
+				instruct();
+				break;
+			case 'q':case 'Q':
+				return;
+
+			default:
+				cerr << "invalid input detected" << endl;
+			while (cin.get() != '\n')continue;
+				break;
+		}
 
 		}
+		catch (Patron::BadPatron& p) {
+			cerr << p.what() << endl;
+		}
+
+		catch (Book::BadBook& b) {
+			cerr << b.what() << endl;
+		}
+
+		catch (exception& e) {
+			throw;
+		}
+
+		catch (...) {
+			throw;
+		}
+
 	}
 }
 

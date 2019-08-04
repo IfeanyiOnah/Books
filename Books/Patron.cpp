@@ -34,6 +34,7 @@ istream& operator>>(istream& is, Patron& p)
 {
 
 	try {
+		is.exceptions(is.exceptions() | ios_base::badbit);
 		string name, cd_no, bal;
 
 		//read name
@@ -50,11 +51,11 @@ istream& operator>>(istream& is, Patron& p)
 		stringstream ss(bal);
 		ss >> f;
 
-		if (is.fail() || is.bad())return is;
+		if (is.fail())return is;
 
 		if (!p.valid_card(cd_no)) {
 			string s = "invalid card detected. Name: " + name + " No: " + cd_no;
-			error_msg(s);
+			throw Patron::BadPatron(s,Patron::INVALID_CARD);
 		}
 		Patron tmp(name, cd_no, f);
 		p = tmp;
@@ -71,13 +72,6 @@ istream& operator>>(istream& is, Patron& p)
 //operator to write to cout from patron class 
 ostream& operator<<(ostream& os, Patron& p) {
 
-	os << "{ Name: " << p.get_name() << " Balance: " << p.get_fee() << " }\n";
+	os << "{ Name: " << p.name << " Balance: " << p.fee <<  " Euro(s)" <<  " }\n";
 	return os;
-}
-
-Patron& Patron::operator=(const Patron& b) {
-	name = b.name;
-	card_no = b.card_no;
-	fee = b.fee;
-	return *this;
 }
